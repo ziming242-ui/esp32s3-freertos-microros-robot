@@ -1,0 +1,16 @@
+menu "Robot Network Configuration"
+
+    config ROBOT_WIFI_SSID
+        string "Wi-Fi SSID"
+        default ""
+
+    config ROBOT_WIFI_PASSWORD
+        string "Wi-Fi password"
+        default ""
+
+    config ROBOT_WIFI_MAXIMUM_RETRY
+        int "Maximum retry count"
+        range 1 20
+        default 10
+
+endmenu

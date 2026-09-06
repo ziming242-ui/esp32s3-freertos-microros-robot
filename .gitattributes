@@ -6,8 +6,15 @@
 CMakeLists.txt text eol=lf
 *.yml text eol=lf
 *.yaml text eol=lf
-*.patch text eol=lf
+*.patch text eol=lf whitespace=-space-before-tab
 *.sh text eol=lf
 *.ps1 text eol=lf
 *.py text eol=lf
 *.md text eol=lf
+Kconfig.projbuild text eol=lf
+*.ini text eol=lf
+*.lock text eol=lf
+sdkconfig.defaults text eol=lf
+.gitignore text eol=lf
+.gitmodules text eol=lf
+.gitattributes text eol=lf

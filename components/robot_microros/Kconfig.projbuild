@@ -1,0 +1,45 @@
+menu "Robot micro-ROS Configuration"
+
+    config ROBOT_MICROROS_AGENT_IP
+        string "micro-ROS Agent IPv4 address"
+        default "192.168.137.1"
+
+    config ROBOT_MICROROS_AGENT_PORT
+        string "micro-ROS Agent UDP port"
+        default "8888"
+
+    config ROBOT_MICROROS_DOMAIN_ID
+        int "ROS 2 domain ID"
+        range 0 101
+        default 0
+
+    config ROBOT_MICROROS_PUBLISH_PERIOD_MS
+        int "Heartbeat publish period (ms)"
+        range 100 10000
+        default 1000
+
+    config ROBOT_MICROROS_IMU_PUBLISH_PERIOD_MS
+        int "IMU publish period (ms)"
+        range 10 1000
+        default 10
+        help
+            This controls ROS message publication, not the sensor sampling rate.
+
+    config ROBOT_MICROROS_TIME_SYNC_PERIOD_MS
+        int "Agent time resynchronization period (ms)"
+        range 5000 3600000
+        default 60000
+        help
+            IMU messages are withheld until Agent epoch time is synchronized.
+
+    config ROBOT_MICROROS_TASK_STACK
+        int "micro-ROS task stack size (bytes)"
+        range 8192 32768
+        default 16000
+
+    config ROBOT_MICROROS_TASK_PRIORITY
+        int "micro-ROS task priority"
+        range 1 24
+        default 5
+
+endmenu
