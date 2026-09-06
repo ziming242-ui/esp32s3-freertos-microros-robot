@@ -1,0 +1,33 @@
+menu "Robot IMU Configuration"
+
+    choice ROBOT_IMU_BACKEND
+        prompt "IMU data backend"
+        default ROBOT_IMU_BACKEND_DISABLED
+        help
+            Select the source that produces SI-unit IMU samples. Keep the
+            backend disabled until the physical sensor model and wiring have
+            been confirmed. The synthetic backend is only for software and
+            ESP32 data-chain tests; it is not sensor evidence.
+
+        config ROBOT_IMU_BACKEND_DISABLED
+            bool "Disabled"
+
+        config ROBOT_IMU_BACKEND_SYNTHETIC
+            bool "Synthetic samples (test only)"
+    endchoice
+
+    config ROBOT_IMU_SYNTHETIC_PERIOD_MS
+        int "Synthetic sample period (ms)"
+        range 1 1000
+        default 10
+        depends on ROBOT_IMU_BACKEND_SYNTHETIC
+
+    config ROBOT_IMU_STALE_TIMEOUT_MS
+        int "Maximum sample age before it is stale (ms)"
+        range 1 5000
+        default 100
+        help
+            The ROS publisher may use this threshold to reject old samples.
+            Publishing a sample must never refresh its acquisition timestamp.
+
+endmenu

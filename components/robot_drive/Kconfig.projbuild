@@ -1,0 +1,45 @@
+menu "Robot drive dry-run configuration"
+
+    config ROBOT_DRIVE_CONTROL_PERIOD_MS
+        int "Dry-run control period (ms)"
+        range 5 100
+        default 10
+        help
+            Period used by the FreeRTOS task that evaluates the newest command.
+            This is scheduling configuration, not a measured motor-control period.
+
+    config ROBOT_DRIVE_COMMAND_TIMEOUT_MS
+        int "Command timeout (ms)"
+        range 50 5000
+        default 500
+        help
+            A command older than this is replaced by a zero-target snapshot.
+
+    config ROBOT_DRIVE_TURN_GEOMETRY_MM
+        int "Effective turn geometry (mm)"
+        range 1 2000
+        default 115
+        help
+            Provisional effective turn coefficient inherited from the PC model.
+            It must not be presented as a measured chassis half-track. Measure
+            or identify the real geometry before connecting physical motors.
+
+    config ROBOT_DRIVE_MAX_TARGET_MMPS
+        int "Maximum wheel target (mm/s)"
+        range 1 10000
+        default 1000
+        help
+            Common scaling keeps the left-to-right target ratio while limiting
+            every wheel. This is not a verified physical speed limit.
+
+    config ROBOT_DRIVE_TASK_STACK
+        int "Dry-run task stack size (bytes)"
+        range 2048 16384
+        default 4096
+
+    config ROBOT_DRIVE_TASK_PRIORITY
+        int "Dry-run task priority"
+        range 1 24
+        default 6
+
+endmenu

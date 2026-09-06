@@ -1,0 +1,61 @@
+name: Host core tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: host-core-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  module-02-03-core:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and run Module 02 drive tests
+        run: |
+          gcc -std=c11 -Wall -Wextra -Wpedantic -Werror \
+            -Icomponents/robot_drive/include \
+            components/robot_drive/robot_drive_core.c \
+            components/robot_drive/robot_drive_kinematics.c \
+            components/robot_drive/test/test_robot_drive_core.c \
+            -lm -o /tmp/robot_drive_core_tests
+          /tmp/robot_drive_core_tests
+      - name: Build and run Module 03 IMU policy tests
+        run: |
+          gcc -std=c11 -Wall -Wextra -Wpedantic -Werror \
+            -Icomponents/robot_imu/include \
+            components/robot_imu/robot_imu_policy.c \
+            components/robot_imu/test/test_robot_imu_policy.c \
+            -lm -o /tmp/robot_imu_policy_tests
+          /tmp/robot_imu_policy_tests
+      - name: Parse PowerShell tools
+        shell: pwsh
+        run: |
+          Get-ChildItem tools -Filter *.ps1 | ForEach-Object {
+            $tokens = $null
+            $parseErrors = $null
+            [void][System.Management.Automation.Language.Parser]::ParseFile(
+              $_.FullName, [ref]$tokens, [ref]$parseErrors)
+            if ($parseErrors.Count) { throw ($parseErrors | Out-String) }
+          }
+
+  dependency-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Apply pinned dependency patch and check idempotence
+        shell: pwsh
+        run: |
+          ./tools/setup-dependencies.ps1
+          ./tools/setup-dependencies.ps1
