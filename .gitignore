@@ -1,0 +1,21 @@
+.pio/
+.vscode/
+.host-build/
+build*/
+managed_components/
+
+# Local board/network configuration. Keep the portable defaults.
+sdkconfig
+sdkconfig.*
+!sdkconfig.defaults
+
+tools/logs/
+**/__pycache__/
+*.py[cod]
+*.bin
+*.elf
+*.map
+compile_commands.json
+.env
+.env.*
+!.env.example
