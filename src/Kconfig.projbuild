@@ -1,3 +1,24 @@
+menu "Robot Application Mode"
+
+    choice ROBOT_APP_MODE
+        prompt "Application mode"
+        default ROBOT_APP_MODE_NORMAL
+
+        config ROBOT_APP_MODE_NORMAL
+            bool "Normal robot application"
+
+        config ROBOT_APP_MODE_ENCODER_PROBE
+            bool "Read-only four-channel encoder probe"
+
+        config ROBOT_APP_MODE_CHASSIS_DIAG
+            bool "Default-disarmed chassis diagnostic"
+
+        config ROBOT_APP_MODE_MICROROS_CHASSIS
+            bool "Default-disarmed micro-ROS chassis integration"
+    endchoice
+
+endmenu
+
 menu "Robot Network Configuration"
 
     config ROBOT_WIFI_SSID

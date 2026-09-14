@@ -5,6 +5,8 @@ $ErrorActionPreference = 'Stop'
 
 $projectRoot = Split-Path -Parent $PSScriptRoot
 $idfWindowsPath = Join-Path $env:USERPROFILE '.platformio\packages\framework-espidf'
+$markerPath = Join-Path $projectRoot 'build-wsl\verified-build.json'
+$verifyScriptPath = Join-Path $PSScriptRoot 'verify-firmware-artifacts.ps1'
 
 function Convert-ToWslPath {
     param([Parameter(Mandatory)][string]$WindowsPath)
@@ -21,6 +23,9 @@ function Convert-ToWslPath {
 
 if (-not (Test-Path -LiteralPath (Join-Path $idfWindowsPath 'export.sh'))) {
     throw "ESP-IDF was not found at $idfWindowsPath"
+}
+if (-not (Test-Path -LiteralPath $verifyScriptPath)) {
+    throw "Artifact verifier was not found at $verifyScriptPath"
 }
 
 $projectWslPath = Convert-ToWslPath $projectRoot
@@ -40,11 +45,20 @@ cd '$projectWslPath'
 idf.py -B build-wsl -DIDF_TARGET=esp32s3 -DSDKCONFIG=sdkconfig.esp32-s3-devkitc-1 build
 "@
 
-Write-Host "Building ESP32-S3 firmware with ESP-IDF in WSL..."
+if (Test-Path -LiteralPath $markerPath) {
+    Remove-Item -LiteralPath $markerPath -Force
+}
+
+$stopwatch = [System.Diagnostics.Stopwatch]::StartNew()
+Write-Host "Incremental ESP32-S3 build: reusing build-wsl (no clean/fullclean)."
 & wsl.exe -d Ubuntu-22.04 -- bash -lc $buildCommand
 
 if ($LASTEXITCODE -ne 0) {
     exit $LASTEXITCODE
 }
 
-Write-Host "Build complete: $projectRoot\build-wsl\esp32s3_freertos_basics.bin"
+& $verifyScriptPath -WriteMarker
+$stopwatch.Stop()
+
+Write-Host ("Build complete in {0:N1}s: {1}\build-wsl\esp32s3_freertos_basics.bin" -f `
+    $stopwatch.Elapsed.TotalSeconds, $projectRoot)

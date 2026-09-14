@@ -9,6 +9,10 @@
 #include "freertos/task.h"
 #include "sdkconfig.h"
 
+#if defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
+#include "robot_imu_icm42670p_backend.h"
+#endif
+
 static const char *TAG = "robot_imu";
 
 /* A length-one queue gives the pipeline coherent "latest sample" semantics. */
@@ -56,12 +60,15 @@ esp_err_t robot_imu_start(void)
         return ESP_ERR_INVALID_STATE;
     }
 
-#if defined(CONFIG_ROBOT_IMU_BACKEND_SYNTHETIC)
+#if defined(CONFIG_ROBOT_IMU_BACKEND_SYNTHETIC) || \
+    defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
     s_latest_sample_queue = xQueueCreate(1, sizeof(robot_imu_sample_t));
     if (s_latest_sample_queue == NULL) {
         return ESP_ERR_NO_MEM;
     }
+#endif
 
+#if defined(CONFIG_ROBOT_IMU_BACKEND_SYNTHETIC)
     const BaseType_t created = xTaskCreate(
         synthetic_imu_task,
         "imu_synthetic",
@@ -79,6 +86,15 @@ esp_err_t robot_imu_start(void)
     ESP_LOGW(TAG,
              "synthetic IMU enabled: period=%d ms; not sensor evidence",
              CONFIG_ROBOT_IMU_SYNTHETIC_PERIOD_MS);
+#elif defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
+    const esp_err_t err = robot_imu_icm42670p_backend_start();
+    if (err != ESP_OK) {
+        vQueueDelete(s_latest_sample_queue);
+        s_latest_sample_queue = NULL;
+        return err;
+    }
+    s_started = true;
+    ESP_LOGI(TAG, "physical IMU backend enabled: icm42670p");
 #else
     s_started = true;
     ESP_LOGI(TAG, "IMU backend disabled");
@@ -89,7 +105,8 @@ esp_err_t robot_imu_start(void)
 
 bool robot_imu_is_enabled(void)
 {
-#if defined(CONFIG_ROBOT_IMU_BACKEND_SYNTHETIC)
+#if defined(CONFIG_ROBOT_IMU_BACKEND_SYNTHETIC) || \
+    defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
     return true;
 #else
     return false;
@@ -100,8 +117,19 @@ const char *robot_imu_backend_name(void)
 {
 #if defined(CONFIG_ROBOT_IMU_BACKEND_SYNTHETIC)
     return "synthetic";
+#elif defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
+    return "icm42670p";
 #else
     return "disabled";
+#endif
+}
+
+const char *robot_imu_frame_id(void)
+{
+#if defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
+    return "icm42670p_link";
+#else
+    return "imu_frame";
 #endif
 }
 
@@ -162,4 +190,14 @@ bool robot_imu_get_latest(robot_imu_sample_t *out_sample)
     }
 
     return xQueuePeek(s_latest_sample_queue, out_sample, 0) == pdPASS;
+}
+
+esp_err_t robot_imu_request_test_pause(uint32_t duration_ms)
+{
+#if defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
+    return robot_imu_icm42670p_backend_request_pause(duration_ms);
+#else
+    (void)duration_ms;
+    return ESP_ERR_NOT_SUPPORTED;
+#endif
 }
