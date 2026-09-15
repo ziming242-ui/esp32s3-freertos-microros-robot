@@ -1,10 +1,21 @@
 dependencies:
+  espressif/bdc_motor:
+    component_hash: 4165d3711efeab02dfe120716a0c10f9a838bd935e7230efa5f614976217b2eb
+    dependencies:
+    - name: idf
+      require: private
+      version: '>=5.0'
+    source:
+      registry_url: https://components.espressif.com/
+      type: service
+    version: 0.2.1
   idf:
     source:
       type: idf
     version: 6.0.1
 direct_dependencies:
+- espressif/bdc_motor
 - idf
-manifest_hash: 01343e16a726449a5f3a193ec00d721e166ec756c13ed5fcd5e9ddddc8f1bfb7
+manifest_hash: 1727dfd021cf47a96485c12b30636d9084c6889edfcdee6aa022534492bf30bf
 target: esp32s3
 version: 3.0.0

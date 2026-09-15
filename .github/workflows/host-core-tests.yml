@@ -36,6 +36,14 @@ jobs:
             components/robot_imu/test/test_robot_imu_policy.c \
             -lm -o /tmp/robot_imu_policy_tests
           /tmp/robot_imu_policy_tests
+      - name: Build and run Module 03 ICM42670P core tests
+        run: |
+          gcc -std=c11 -Wall -Wextra -Wpedantic -Werror \
+            -Icomponents/robot_imu/include \
+            components/robot_imu/robot_imu_icm42670p_core.c \
+            components/robot_imu/test/test_robot_imu_icm42670p_core.c \
+            -lm -o /tmp/robot_imu_icm42670p_core_tests
+          /tmp/robot_imu_icm42670p_core_tests
       - name: Parse PowerShell tools
         shell: pwsh
         run: |
