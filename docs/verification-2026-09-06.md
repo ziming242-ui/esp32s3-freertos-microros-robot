@@ -13,8 +13,8 @@
 
 | 验证项 | 命令/方法 | 实际结果 | 证据与边界 |
 |---|---|---|---|
-| 02 纯 C 核心 | `pwsh tools/test-host-core.ps1` | 62 checks, 0 failures | `[PC模拟]`：直行、转向、等比例限速、NaN、无效配置；未执行 FreeRTOS 超时任务 |
-| 03 数据检查策略 | 同上 | `robot_imu_policy: PASS` | `[PC模拟]`：无样本、新鲜、100 ms 边界、过期、时钟倒退、NaN；未执行真实采集 |
+| 02 纯 C 核心 | `pwsh tools/test-host-core.ps1` | 62 checks, 0 failures | 主机逻辑检查：直行、转向、等比例限速、NaN、无效配置；未执行 FreeRTOS 超时任务 |
+| 03 数据检查策略 | 同上 | `robot_imu_policy: PASS` | 主机逻辑检查：无样本、新鲜、100 ms 边界、过期、时钟倒退、NaN；未执行真实采集 |
 | Synthetic 条件分支 | 从 compile_commands.json 复用 Xtensa 编译选项，额外定义 synthetic/10 ms，执行 `-fsyntax-only` | PASS | 单文件交叉编译语法检查；不是 synthetic 整固件链接或运行 |
 | 应用集成编译单元 | 对 `robot_drive.c`、`robot_microros.c`、`src/main.c` 复用 Xtensa 选项执行 `-fsyntax-only` | PASS | 编译检查，不证明 FreeRTOS 调度、超时或 ROS 2 运行行为 |
 | 固件默认配置 | `pwsh tools/build-firmware.ps1` | PASS：编译、最终链接、镜像生成和分区大小检查均通过 | 构建检查：目标 ESP32-S3，IMU disabled；没有烧录或运行证据 |

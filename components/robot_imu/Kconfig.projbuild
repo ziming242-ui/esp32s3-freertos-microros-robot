@@ -7,7 +7,7 @@ menu "Robot IMU Configuration"
             Select the source that produces SI-unit IMU samples. Keep the
             backend disabled until the physical sensor model and wiring have
             been confirmed. The synthetic backend is only for software and
-            ESP32 data-chain tests; it is not sensor evidence.
+            ESP32 data-chain tests; it is not a substitute for sensor validation.
 
         config ROBOT_IMU_BACKEND_DISABLED
             bool "Disabled"

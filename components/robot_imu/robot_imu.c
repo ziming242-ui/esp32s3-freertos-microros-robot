@@ -84,7 +84,7 @@ esp_err_t robot_imu_start(void)
 
     s_started = true;
     ESP_LOGW(TAG,
-             "synthetic IMU enabled: period=%d ms; not sensor evidence",
+             "synthetic IMU enabled: period=%d ms; simulation input only",
              CONFIG_ROBOT_IMU_SYNTHETIC_PERIOD_MS);
 #elif defined(CONFIG_ROBOT_IMU_BACKEND_ICM42670P)
     const esp_err_t err = robot_imu_icm42670p_backend_start();

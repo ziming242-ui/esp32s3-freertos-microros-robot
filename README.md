@@ -2,14 +2,14 @@
 
 ESP32-S3 底盘固件与传感器验证工程，面向“ROS 2 上位机 + MCU 实时任务”的实验室配送机器人控制链。
 
-## 当前公开范围
+## Current scope
 
-| 模块 | 公开内容 | 证据边界 |
+| 模块 | 公开内容 | 当前状态 |
 | --- | --- | --- |
 | micro-ROS 通信 | Wi-Fi/UDP、Agent、`/robot/heartbeat`、`/robot/command`、rclc Executor | 通信链与命令接收可复现；不把 ping 当作 Session 或实体证据 |
-| 底盘控制 | `robot_drive` 最新命令快照、超时保护；`robot_chassis_diag` 的 10 ms 控制任务、MCPWM/PCNT、硬限幅、默认禁能和 `stop_all()` | 四路 PCNT 手转属于 `[模块实测]`；不宣称电机闭环、PID、里程计或整车运动已通过 |
-| ICM42670P | I2C0 GPIO39/40、地址 `0x68`、WHO_AM_I、配置回读、DRDY 轮询、raw→SI 换算和 stale 测试入口 | 真实 I2C 与 16/16 六轴批量采样属于 `[模块实测]`；安装轴映射、正式 ROS 频率和断开自动恢复仍单独标注 |
-| 主机测试 | drive / IMU 纯 C 核心测试和 PowerShell 构建入口 | `[PC模拟]` 或构建成功不等于整车硬件证明 |
+| 底盘控制 | `robot_drive` 最新命令快照、超时保护；`robot_chassis_diag` 的 10 ms 控制任务、MCPWM/PCNT、硬限幅、默认禁能和 `stop_all()` | 四路 PCNT 手转已完成；电机闭环、PID、里程计和整车运动仍待独立验证 |
+| ICM42670P | I2C0 GPIO39/40、地址 `0x68`、WHO_AM_I、配置回读、DRDY 轮询、raw→SI 换算和 stale 测试入口 | 真实 I2C 与 16/16 六轴批量采样已完成；安装轴映射、正式 ROS 频率和断开自动恢复仍待验证 |
+| 主机测试 | drive / IMU 纯 C 核心测试和 PowerShell 构建入口 | 覆盖纯 C 逻辑，不替代总线、电机或整车验证 |
 
 ## 关键数据链
 
@@ -29,7 +29,7 @@ ICM42670P → I2C0 → raw int16 → SI-unit sample → freshness check → /imu
 - `components/robot_chassis_diag`：10 ms 底盘诊断、MCPWM、PCNT、PI 和安全状态机
 - `components/robot_encoder_probe`：只读四路 PCNT 诊断
 - `components/robot_imu`：IMU 策略、ICM42670P 后端和纯 C 换算核心
-- `docs/verification-2026-09-12.md`：最新验证摘要与证据边界
+- `docs/verification-2026-09-12.md`：最新验证摘要与已知限制
 - `tools/README_chassis_diag_test.md`：底盘诊断命令与安全前置条件
 
 ## 构建与测试

@@ -2,7 +2,7 @@ menu "Robot micro-ROS Configuration"
 
     config ROBOT_MICROROS_AGENT_IP
         string "micro-ROS Agent IPv4 address"
-        default "192.168.137.1"
+        default ""
 
     config ROBOT_MICROROS_AGENT_PORT
         string "micro-ROS Agent UDP port"
